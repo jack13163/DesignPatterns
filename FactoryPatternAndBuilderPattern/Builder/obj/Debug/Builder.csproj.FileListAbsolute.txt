@@ -1,0 +1,5 @@
+E:\AppSurceCode\DesignPatterns\FactoryPatternAndBuilderPattern\Builder\bin\Debug\Builder.dll
+E:\AppSurceCode\DesignPatterns\FactoryPatternAndBuilderPattern\Builder\bin\Debug\Builder.pdb
+E:\AppSurceCode\DesignPatterns\FactoryPatternAndBuilderPattern\Builder\obj\Debug\Builder.csprojResolveAssemblyReference.cache
+E:\AppSurceCode\DesignPatterns\FactoryPatternAndBuilderPattern\Builder\obj\Debug\Builder.dll
+E:\AppSurceCode\DesignPatterns\FactoryPatternAndBuilderPattern\Builder\obj\Debug\Builder.pdb
