@@ -1,2 +1,1 @@
-# DesignPatterns
-homework
+# 为了方便起见，采用每次追加该文件的方式，对作业进行简要说明。
