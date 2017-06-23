@@ -80,7 +80,7 @@ namespace ProcessBack
         [MethodImpl(MethodImplOptions.Synchronized)]
         public bool QueFactoryEmpty()
         {
-            return instance.AllQue.Count == 0 && instance.ReadyQue.Count == 0 && instance.BackupReadyQue.Count == 0 && instance.InputQue.Count == 0 && instance.OutputQue.Count == 0 && instance.WaitQue.Count == 0;
+            return instance.ReadyQue.Count == 0 && instance.BackupReadyQue.Count == 0 && instance.InputQue.Count == 0 && instance.OutputQue.Count == 0 && instance.WaitQue.Count == 0;
         }
     }
 }

@@ -43,9 +43,9 @@
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.gbQueueStatus = new System.Windows.Forms.GroupBox();
+            this.lbReadyQueue = new System.Windows.Forms.ListBox();
             this.lbOutputWaitQueue = new System.Windows.Forms.ListBox();
             this.label5 = new System.Windows.Forms.Label();
-            this.lbReadyQueue = new System.Windows.Forms.ListBox();
             this.gbQueueStatus.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -178,6 +178,9 @@
             // 
             // gbQueueStatus
             // 
+            this.gbQueueStatus.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.gbQueueStatus.Controls.Add(this.lbReadyQueue);
             this.gbQueueStatus.Controls.Add(this.label4);
             this.gbQueueStatus.Controls.Add(this.lbOutputWaitQueue);
@@ -194,6 +197,15 @@
             this.gbQueueStatus.TabIndex = 15;
             this.gbQueueStatus.TabStop = false;
             this.gbQueueStatus.Text = "进程状态";
+            // 
+            // lbReadyQueue
+            // 
+            this.lbReadyQueue.FormattingEnabled = true;
+            this.lbReadyQueue.ItemHeight = 12;
+            this.lbReadyQueue.Location = new System.Drawing.Point(42, 44);
+            this.lbReadyQueue.Name = "lbReadyQueue";
+            this.lbReadyQueue.Size = new System.Drawing.Size(120, 88);
+            this.lbReadyQueue.TabIndex = 7;
             // 
             // lbOutputWaitQueue
             // 
@@ -212,15 +224,6 @@
             this.label5.Size = new System.Drawing.Size(77, 12);
             this.label5.TabIndex = 13;
             this.label5.Text = "输出等待队列";
-            // 
-            // lbReadyQueue
-            // 
-            this.lbReadyQueue.FormattingEnabled = true;
-            this.lbReadyQueue.ItemHeight = 12;
-            this.lbReadyQueue.Location = new System.Drawing.Point(42, 44);
-            this.lbReadyQueue.Name = "lbReadyQueue";
-            this.lbReadyQueue.Size = new System.Drawing.Size(120, 88);
-            this.lbReadyQueue.TabIndex = 7;
             // 
             // MainFrm
             // 

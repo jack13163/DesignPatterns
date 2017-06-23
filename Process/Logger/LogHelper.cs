@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using System.Diagnostics;
 
 namespace Logger
 {
@@ -12,7 +13,7 @@ namespace Logger
     public class LogHelper : ILog
     {
         private Stream stream = null;
-        private string filepath = "";
+        private string filepath = System.AppDomain.CurrentDomain.BaseDirectory + @"log.txt";
 
         /// <summary>
         /// 设置输出路径
@@ -38,23 +39,29 @@ namespace Logger
         /// <param name="message">消息</param>
         public void Log(string message)
         {
-            if (this.filepath.Equals(""))
+            try
             {
-                //创建文件
-                FileInfo f = new FileInfo(this.filepath);
-                //获取流写入器
-                StreamWriter sw = f.AppendText();
+                if (!this.filepath.Equals(""))
+                {
+                    if (!File.Exists(this.filepath))
+                    {
+                        File.Delete(this.filepath);
+                    }
 
-                //写入流
-                sw.WriteLine(DateTime.Now.ToString() + ":" + message);
-
-                sw.Flush();
-                sw.Close();
+                    //写入文件
+                    File.AppendAllText(filepath, DateTime.Now.ToString() + ":" + message + "\n", Encoding.UTF8);
+                }
+                if (this.stream != null)
+                {
+                    //写入流
+                    StreamWriter sw = new StreamWriter(this.stream);
+                    sw.Write(DateTime.Now.ToString() + ":" + message);
+                    sw.Close();
+                }
             }
-            if(this.stream != null)
+            catch(Exception ex)
             {
-                StreamWriter sw = new StreamWriter(this.stream);
-                sw.Write(DateTime.Now.ToString() + ":" + message);
+                Console.WriteLine("日志写入出错" + ex.Message);
             }
         }
     }

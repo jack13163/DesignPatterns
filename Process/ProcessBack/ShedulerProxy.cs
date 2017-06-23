@@ -18,26 +18,23 @@ namespace ProcessBack
         /// <summary>
         /// 作业调度线程
         /// </summary>
-        Thread homeworktask = null;
+        private static Thread homeworktask = null;
 
         /// <summary>
         /// 进程调度线程
         /// </summary>
-        Thread processtask = null;
+        private static Thread processtask = null;
 
         /// <summary>
         /// 阻塞调度线程
         /// </summary>
-        Thread iotask = null;
-
-        /// <summary>
-        /// 调度控制标识
-        /// </summary>
-        private static bool flag = true;
+        private static Thread iotask = null;
 
         public ShedulerProxy()
         {
         }
+
+        private static bool flag = true;
 
         /// <summary>
         /// 进程调度
@@ -60,16 +57,35 @@ namespace ProcessBack
         }
 
         /// <summary>
+        /// 阻塞调度
+        /// </summary>
+        public override void WaitShedule()
+        {
+            //开始检查阻塞队列调度
+            iotask = new Thread(Wakeup);
+            iotask.Start();
+        }
+
+        /// <summary>
         /// 初始化
         /// </summary>
         /// <param name="t_p"></param>
         public override void Init(int t_p = 1000)
         {
+            //设置时间片大小
             T = t_p;
 
-            //开始检查阻塞队列调度
-            iotask = new Thread(Wakeup);
-            iotask.Start();
+            //清空队列
+            QueueFactory.GetInstance().InputQue.Clear();
+            QueueFactory.GetInstance().WaitQue.Clear();
+            QueueFactory.GetInstance().ReadyQue.Clear();
+            QueueFactory.GetInstance().BackupReadyQue.Clear();
+            QueueFactory.GetInstance().OutputQue.Clear();
+
+            flag = true;
+
+            //准备进程
+            MemoryProcess.OnRunning();
         }
 
         /// <summary>
@@ -141,12 +157,10 @@ namespace ProcessBack
         {
             while (flag)
             {
-                Console.WriteLine("作业调度");
-
                 Monitor.Enter(QueueFactory.GetInstance().ReadyQue);
                 Monitor.Enter(QueueFactory.GetInstance().BackupReadyQue);
-                //从后备就绪队列中取队首进程
-                if (QueueFactory.GetInstance().ReadyQue.Count < 3)
+                //从后备就绪队列中取队首进程，粗略限制就绪进程数目为3
+                if (QueueFactory.GetInstance().BackupReadyQue.Count > 0 && QueueFactory.GetInstance().ReadyQue.Count < 3)
                 {
                     PCB p = QueueFactory.GetInstance().BackupReadyQue.Dequeue();
 
@@ -156,7 +170,7 @@ namespace ProcessBack
                 else
                 {
                     //挂起线程（就绪进程已经足够）
-                    Thread.Sleep(T * 3);
+                    Thread.Sleep(T);
                 }
                 Monitor.Exit(QueueFactory.GetInstance().BackupReadyQue);
                 Monitor.Exit(QueueFactory.GetInstance().ReadyQue);
@@ -170,8 +184,6 @@ namespace ProcessBack
         {
             while (flag)
             {
-                Console.WriteLine("进程调度");
-
                 Monitor.Enter(QueueFactory.GetInstance().ReadyQue);
                 //从就绪队列中取队首进程
                 if (QueueFactory.GetInstance().ReadyQue.Count > 0)
@@ -192,7 +204,7 @@ namespace ProcessBack
                 //判断所有的队列是否为空
                 if (QueueFactory.GetInstance().QueFactoryEmpty())
                 {
-                    Console.WriteLine("所有的队列都为空");
+                    Console.WriteLine("停止调度！");
                     flag = false;
                 }
                 Monitor.Exit(QueueFactory.GetInstance().ReadyQue);
@@ -204,7 +216,32 @@ namespace ProcessBack
         /// </summary>
         public override void StopShedule()
         {
-            //终止进程调度线程
+            //最好让线程自动结束
+            flag = false;
+        }
+
+        /// <summary>
+        /// 停止作业调度
+        /// </summary>
+        public override void StopHomeworkShedule()
+        {
+            //最好让线程自动结束
+            flag = false;
+        }
+
+        /// <summary>
+        /// 停止阻塞调度
+        /// </summary>
+        public override void StopWaitShedule()
+        {
+            ////终止进程调度线程
+            //this.iotask.Abort();
+            //while (this.iotask.ThreadState != ThreadState.Aborted)
+            //{
+            //    //当调用Abort方法后，如果thread线程的状态不为Aborted，主线程就一直在这里做循环，直到thread线程的状态变为Aborted为止
+            //    Thread.Sleep(100);
+            //}
+            //最好让线程自动结束
             flag = false;
         }
     }

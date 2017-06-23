@@ -7,7 +7,7 @@ using Process;
 namespace ProcessBack
 {
     /// <summary>
-    /// 就绪状态
+    /// 后备就绪状态
     /// </summary>
     public class OnReadyStatus : ProcessStatus, ISubject
     {

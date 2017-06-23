@@ -5,6 +5,7 @@ using System.Text;
 using System.IO;
 using Process;
 using System.Threading;
+using Logger;
 
 
 namespace ProcessBack
@@ -14,6 +15,12 @@ namespace ProcessBack
     /// </summary>
     public class MemoryProcess
     {
+        public MemoryProcess()
+        {
+            //设置输出路径
+            //logger.SetOutput("C:/log.txt");
+        }
+
         /// <summary>
         /// 保存阻塞时间
         /// </summary>
@@ -32,6 +39,11 @@ namespace ProcessBack
         {
             waittime = time;
         }
+
+        /// <summary>
+        /// 日志记录类
+        /// </summary>
+        private static ILog logger = new LogHelper();
 
         /// <summary>
         /// 未完成（不包含阻塞情况，阻塞情况已经处理）进程
@@ -70,6 +82,7 @@ namespace ProcessBack
             if (cmd.Equals("I"))
             {
                 Console.WriteLine("进程" + processname + ":I" + "，剩余：" + timepick);
+                logger.Log("进程" + processname + ":I" + "，剩余：" + timepick);
                 //插入输入阻塞队列
                 QueueFactory.GetInstance().InputQue.Add(RunProcess);
                 //通知状态改变，并更新视图
@@ -78,6 +91,7 @@ namespace ProcessBack
             else if (cmd.Equals("O"))
             {
                 Console.WriteLine("进程" + processname + ":O" + "，剩余：" + timepick);
+                logger.Log("进程" + processname + ":O" + "，剩余：" + timepick);
 
                 //插入输入阻塞队列
                 QueueFactory.GetInstance().OutputQue.Add(RunProcess);
@@ -87,6 +101,7 @@ namespace ProcessBack
             else if (cmd.Equals("W"))
             {
                 Console.WriteLine("进程" + processname + ":W" + "，剩余：" + timepick);
+                logger.Log("进程" + processname + ":W" + "，剩余：" + timepick);
 
                 //插入输入阻塞队列
                 QueueFactory.GetInstance().WaitQue.Add(RunProcess);
@@ -96,13 +111,15 @@ namespace ProcessBack
             //进程结束
             else if (cmd.Equals("H"))
             {
+                logger.Log("进程" + processname + ":H");
                 complete = true;//进程结束
             }
             else if (cmd.Equals("C"))
             {
                 Console.WriteLine("进程" + processname + ":C" + "，剩余：" + timepick);
+                logger.Log("进程" + processname + ":C" + "，剩余：" + timepick);
                 RunProcess.Context.StatusChange(StatusFactory.GetInstance().Running);
-                //休眠指定的时间
+                //休眠指定的时间，占用时间片
                 Thread.Sleep(ShedulerProxy.T);
 
                 RunProcess.PInstructions[RunProcess.CurrentInstruction].IRemaintime--;
@@ -124,14 +141,15 @@ namespace ProcessBack
             return null;
         }
 
-        #region 无疑问区域
-
         /// <summary>
         /// 加载程序
         /// </summary>
         /// <param name="filepath">程序说明文件路径</param>
         public static void LoadProcess(string filepath)
         {
+            //初始化
+            QueueFactory.GetInstance().AllQue.Clear();
+
             //读入文件
             StreamReader sr = new StreamReader(filepath);
 
@@ -183,13 +201,13 @@ namespace ProcessBack
             //将所有进程全部加载到后备就绪队列中准备调度
             foreach (var item in QueueFactory.GetInstance().AllQue)
             {
+                Monitor.Enter(QueueFactory.GetInstance().BackupReadyQue);
                 QueueFactory.GetInstance().BackupReadyQue.Enqueue(item);
                 //设置当前进程上下文，并修改进程状态为后备就绪状态
                 item.Context.current = item;
                 item.Context.StatusChange(StatusFactory.GetInstance().OnReady);
+                Monitor.Exit(QueueFactory.GetInstance().BackupReadyQue);
             }
         }
-
-        #endregion
     }
 }

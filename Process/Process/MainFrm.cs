@@ -9,7 +9,8 @@ using System.Windows.Forms;
 using System.IO;
 
 using ProcessBack;
-
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Process
 {
@@ -19,14 +20,14 @@ namespace Process
         /// 进程调度器
         /// </summary>
         private ShedulerTemplete sheduler = new ShedulerProxy();
-        
+
         public MainFrm()
         {
             InitializeComponent();
 
             this.btnStop.Enabled = false;
             this.btnStart.Enabled = false;
-            this.txtTime.Text = "100";
+            this.txtTime.Text = "1000";
 
             //添加监听
             StatusFactory.GetInstance().Ready.AddListener(this);
@@ -34,7 +35,7 @@ namespace Process
             StatusFactory.GetInstance().Wait.AddListener(this);
             StatusFactory.GetInstance().Output.AddListener(this);
             StatusFactory.GetInstance().OnReady.AddListener(this);
-            StatusFactory.GetInstance().Input.AddListener(this);            
+            StatusFactory.GetInstance().Input.AddListener(this);
         }
 
         private void btnOpenFile_Click(object sender, EventArgs e)
@@ -57,17 +58,16 @@ namespace Process
 
         private void btnStart_Click(object sender, EventArgs e)
         {
+            Console.WriteLine("开始调度");
+
             if (!this.txtTime.Text.Trim().Equals(""))
             {
                 //设置按钮不可用
                 this.btnStart.Enabled = false;
                 this.btnStop.Enabled = true;
-                                                              
+
                 //设置进程调度时间片大小(毫秒)
                 int ms = int.Parse(this.txtTime.Text.Trim());
-
-                //准备进程
-                MemoryProcess.OnRunning();
 
                 //初始化
                 sheduler.Init(ms);
@@ -75,6 +75,8 @@ namespace Process
                 sheduler.HomeworkShedule();
                 //进程调度
                 sheduler.ProcessShedule();
+                //阻塞调度
+                sheduler.WaitShedule();
             }
             else
             {
@@ -86,6 +88,8 @@ namespace Process
         {
             //停止进程调度
             sheduler.StopShedule();
+            sheduler.StopHomeworkShedule();
+            sheduler.StopWaitShedule();
 
             //设置按钮不可用
             this.btnStop.Enabled = false;
@@ -136,27 +140,27 @@ namespace Process
                 ListBox lb = ((ListBox)view);
                 lb.Items.Clear();
 
-                //判断结点类型
+                //判断结点类型，加入元素，不能使用foreach进行遍历
                 if (data is Queue<PCB>)
                 {
                     //添加到列表中显示
-                    foreach (var item in (Queue<PCB>)data)
+                    for (int i = 0; i < ((Queue<PCB>)data).Count; i++)
                     {
                         //添加到对应队列
-                        lb.Items.Add(item.PName);
+                        lb.Items.Add(((Queue<PCB>)data).ElementAt(i).PName);
                     }
                 }
-                else if(data is List<PCB>)
+                else if (data is List<PCB>)
                 {
                     //添加到列表中显示
-                    foreach (var item in (List<PCB>)data)
+                    for (int i = 0; i < ((List<PCB>)data).Count; i++)
                     {
                         //添加到对应队列
-                        lb.Items.Add(item.PName);
+                        lb.Items.Add(((List<PCB>)data).ElementAt(i).PName);
                     }
                 }
             }
-            else if(view is Label)
+            else if (view is Label)
             {
                 if (data is string)
                 {

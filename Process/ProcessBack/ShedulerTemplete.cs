@@ -36,5 +36,20 @@ namespace ProcessBack
         /// 作业调度
         /// </summary>
         public abstract void HomeworkShedule();
+
+        /// <summary>
+        /// 作业调度
+        /// </summary>
+        public abstract void StopHomeworkShedule();
+
+        /// <summary>
+        /// 阻塞调度
+        /// </summary>
+        public abstract void WaitShedule();
+
+        /// <summary>
+        /// 停止阻塞调度
+        /// </summary>
+        public abstract void StopWaitShedule();
     }
 }
