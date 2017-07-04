@@ -10,94 +10,78 @@ namespace XMLParse
     /// <summary>
     /// 结点列表
     /// </summary>
-    public class Container : XNode, IEnumerable
+    public class Container : XNode
     {
-        //结点列表
-        public List<XNode> nodes = new List<XNode>();
+        /// <summary>
+        /// 当前容器结点
+        /// </summary>
+        public List<XNode> Childrens = new List<XNode>();
 
-        //只包含含参构造函数
+        /// <summary>
+        /// 构造器
+        /// </summary>
+        /// <param name="node"></param>
         public Container(string tag)
         {
             this.TagName = tag;
-            //向公共接口传递值
-            this.Value = nodes;
+        }
+
+        /// <summary>
+        /// 默认构造器
+        /// </summary>
+        public Container() { }
+
+
+        public override XNode Remove(XNode node)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// 获取指定索引处的孩子结点
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        public override XNode GetChild(int index)
+        {
+            return this.Childrens[index];
+        }
+
+        private void Trave(XNode node)
+        {
+            //遍历当前结点
+            Console.WriteLine(node.TagName + "： ");
+            //遍历子结点
+            foreach(var item in ((Container)node).Childrens)
+            {
+                if (item is Container)
+                {
+                    //递归遍历
+                    Trave((Container)item);
+                }
+                else if(item is Node)
+                {
+                    Console.WriteLine("  " + ((Node)item).TagName + ": " + ((Node)item).Text);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 遍历结点
+        /// </summary>
+        /// <param name="node"></param>
+        public override void Traverse(XNode node)
+        {
+            Trave(node);
         }
 
         /// <summary>
         /// 添加结点
         /// </summary>
-        /// <param name="node">子结点</param>
-        public void Add(XNode node)
+        /// <param name="node"></param>
+        public override void Add(XNode node)
         {
-            if (node != null)
-            {
-                this.nodes.Add(node);
-            }
-        }
-
-        /// <summary>
-        /// 删除结点
-        /// </summary>
-        /// <param name="tag">待移除的结点名称</param>
-        public void Delete(string tag)
-        {
-            if (this.nodes.Exists(it => it.TagName.Equals(tag)))
-            {
-                //循环移除所有的结点元素
-                foreach (var item in this.nodes.FindAll(it => it.TagName.Equals(tag)))
-                {
-                    this.nodes.Remove(item);
-                }
-            }
-            else
-            {
-                throw new Exception("不存在当前结点");
-            }
-        }
-
-        /// <summary>
-        /// 修改结点
-        /// </summary>
-        /// <param name="tag"></param>
-        /// <param name="value"></param>
-        public void Modefy(string tag, object value)
-        {
-            if (this.nodes.Exists(it => it.TagName.Equals(tag)))
-            {
-                //循环修改所有的结点元素
-                foreach (var item in this.nodes.FindAll(it => it.TagName.Equals(tag)))
-                {
-                    item.Value = value;
-                }
-            }
-            else
-            {
-                throw new Exception("不存在当前结点");
-            }
-        }
-
-        /// <summary>
-        /// 查询结点
-        /// </summary>
-        /// <param name="tag"></param>
-        /// <returns></returns>
-        public List<XNode> Query(string tag)
-        {
-            //若结点存在
-            if (this.nodes.Exists(it => it.TagName.Equals(tag)))
-            {
-                return this.nodes.FindAll(it => it.TagName.Equals(tag));
-            }
-            return null;
-        }
-        
-        /// <summary>
-        /// 支持foreach遍历
-        /// </summary>
-        /// <returns></returns>
-        public IEnumerator GetEnumerator()
-        {
-            return nodes.GetEnumerator();
+            this.Childrens.Add(node);
         }
     }
 }

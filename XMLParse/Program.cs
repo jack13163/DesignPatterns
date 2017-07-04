@@ -5,16 +5,23 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.IO;
+using System.Diagnostics;
+using System.Xml;
 
 namespace XMLParse
 {
+    [Serializable]
     class Program
     {
         static void Main(string[] args)
         {
-            
+            XmlDocument xmldoc = new XmlDocument();
+            string content = xmldoc.ReadAllText(@"E:\AppSurceCode\DesignPatterns\XMLParse\XMLParse\files\AdMigrator.xml");
+            //Console.WriteLine(content);
 
-            Console.ReadKey();
+            Container root = xmldoc.Parse(content);
+            root.Traverse(root);
+
         }
 
         /// <summary>

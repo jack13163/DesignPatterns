@@ -12,11 +12,38 @@ namespace XMLParse
     /// </summary>
     public class Node : XNode
     {
-        //叶子节点构造方法
-        public Node(string tag, object value)
+        public Node()
+        { }
+
+        public string Text { get; set; }
+
+        public Node(string tag, string text)
         {
             this.TagName = tag;
-            this.Value = value;
+            this.Text = text;
+        }
+
+        public override XNode Remove(XNode node)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override XNode GetChild(int index)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// 遍历叶子结点
+        /// </summary>
+        public override void Traverse(XNode node)
+        {
+            Console.Write(node.TagName);
+        }
+
+        public override void Add(XNode node)
+        {
+            throw new NotImplementedException();
         }
     }
 }
